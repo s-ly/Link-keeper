@@ -1,4 +1,5 @@
 # Хранитель ссылок 1.6 alpha, служит для децентрализованного хранения ссылок.
+# Основной модуль
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5 import QtGui # для кнопки открытия URL
