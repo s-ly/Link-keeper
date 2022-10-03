@@ -1,4 +1,3 @@
-from curses import window
 from PyQt5 import QtCore, QtWidgets
 import test2
 
@@ -9,6 +8,7 @@ class MyDialog(QtWidgets.QDialog):
         self.myWidget.vbox.setContentsMargins(0, 0, 0, 0)
         self.button = QtWidgets.QPushButton("&Изменить надпись")
         mainBox = QtWidgets.QVBoxLayout()
+        mainBox.addWidget(self.myWidget)
         mainBox.addWidget(self.button)
         self.setLayout(mainBox)
         self.button.clicked.connect(self.on_clicked)
@@ -20,4 +20,8 @@ class MyDialog(QtWidgets.QDialog):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    window
+    window = MyDialog()
+    window.setWindowTitle("Преимущество ООП-стиля")
+    window.resize(300, 100)
+    window.show()
+    sys.exit(app.exec_())
