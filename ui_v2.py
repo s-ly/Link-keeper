@@ -59,7 +59,7 @@ class Ui_Form(object):
         self.label.setText(_translate("Form", "Описание"))
         self.label_2.setText(_translate("Form", "URL"))
         
-        self.pushButton.setText(_translate("Form", "Открыть URL"))
+        self.pushButton.setText(_translate("Form", "Открыть URL или DIR"))
         self.pushButton_2.setText(_translate("Form", "Удалить карточку"))
         self.pushButton_3.setText(_translate("Form", "Загрузить фото"))
         self.pushButton_4.setText(_translate("Form", "Снимок экрана"))
