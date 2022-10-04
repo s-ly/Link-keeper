@@ -21,17 +21,27 @@ class MyWindow(QtWidgets.QWidget):
         self.button6 = QtWidgets.QPushButton("Сохранить карточки")
         self.button7 = QtWidgets.QPushButton("Открыть все карточки")
 
+        # Текстовая строка с именей файла данных
+        self.butt_fileName = QtWidgets.QLineEdit("data.json")
+        # self.butt_fileName.setText('data.json')
+
+        # тестирование получения текста
+        # self.x = self.butt_fileName.text()
+        # print(self.x)
+
         # порождаем 3 лайоута
         self.buttonLayout = QtWidgets.QGridLayout() # дочерний для верхних кнопок
         self.cardsLayout = QtWidgets.QVBoxLayout() # дочерний для карточек
         self.mainLayout = QtWidgets.QVBoxLayout() # главный, для двух дочерних
 
-        # цыфры позиционируют кнопки по колонкам и строкам
-        # addWidget(widget, row, columnt, row_span=1, column_span=1)
-        self.buttonLayout.addWidget(self.button, 0, 0, 1, 2)
-        self.buttonLayout.addWidget(self.button5, 1, 0, 1, 2)
-        self.buttonLayout.addWidget(self.button6, 2, 0)
-        self.buttonLayout.addWidget(self.button7, 2, 1, 1,1)
+        # цифры позиционируют кнопки по колонкам и строкам
+        # номер строки, номер колонки, высота элемента, ширина элемента
+        self.buttonLayout.addWidget(self.butt_fileName , 0, 0, 1, 2)
+        self.buttonLayout.addWidget(self.button, 1, 0, 1, 1)
+        self.buttonLayout.addWidget(self.button5, 1, 1, 1, 1)
+        self.buttonLayout.addWidget(self.button6, 2, 0, 1, 1)
+        self.buttonLayout.addWidget(self.button7, 2, 1, 1, 1)
+        
 
         self.setLayout(self.mainLayout) # задаём главный лайоут
         self.mainLayout.addLayout(self.buttonLayout) # помещаем дочерний в главный
@@ -51,6 +61,8 @@ class MyWindow(QtWidgets.QWidget):
 
         self.list_obj = [] # список экземпляров карточек
         self.dict_data = {} # словарь только атрибутов карточек
+
+        self.fileName = "" # Имя файла данных, с которым работает приложение
 
     def openAllCards(self):
         """Открывает все карточки."""
@@ -99,6 +111,7 @@ class MyWindow(QtWidgets.QWidget):
         self.readingData()          # обработка функции чтения данных с карточек
         self.writingDataToFile()    # обработка функции запись данных в файл
 
+    
     def loadingFromFile(self):
         """загрузка из файла"""
         print("Загрузка из файла.")
@@ -112,7 +125,10 @@ class MyWindow(QtWidgets.QWidget):
         self.dict_data = {} # обнуляем словарь только атрибутов карточек
 
         """Чтение json файла и его декодирование в словарь."""
-        with open('data.json') as obj_file:
+        # получаем текущее имя файла данных из текстового поля
+        self.fileName = self.butt_fileName.text() 
+
+        with open(self.fileName) as obj_file:
             self.dict_data = json.loads(obj_file.read())
         # print(self.dict_data)
 
@@ -126,6 +142,7 @@ class MyWindow(QtWidgets.QWidget):
             # print(id_fromFile, url_fromFile, description_fromFile)
             self.auto_generate_group(id_fromFile, url_fromFile, description_fromFile, img_fromFile)
 
+    
     def writingDataToFile(self):
         """Запись данных во внешний файл."""
         print("Запись во внешний файл.")
@@ -134,10 +151,14 @@ class MyWindow(QtWidgets.QWidget):
         for i in self.list_obj:
             self.dict_data[str(i.id)] = {'url': i.url, 'description': i.description, 'img': i.img}
 
+        # получаем текущее имя файла данных из текстового поля
+        self.fileName = self.butt_fileName.text() 
+        
         """Кодирование словаря в данные json, и запись данных в файл."""
-        with open('data.json', 'w') as obj_file:
+        with open(self.fileName, 'w') as obj_file:
             json.dump(self.dict_data, obj_file, indent=4) # indent - отступ
         self.dict_data = {} # очищаем
+
 
     def readingData(self):
         """Чтение всех полей карточек и запись эти данных
@@ -342,6 +363,13 @@ class MyUi(QtWidgets.QWidget, ui_v2.Ui_Form):
         self.flagCreateImg = True # меняем флаг, совершён захват области для принскрина
         self.window2.close() # закрыть подОкно
         self.createImg(self.scaleWindow2) # захват был совершён, создаём принскрин по захваченным координатам
+
+    
+    # def loadFileName(self):
+    #     """ Загружает текст из текстового поля для имени файла данных. """
+    #     self.fileName = self.butt_fileName.text()
+    #     # self.fileName = self.butt
+    #     print(self.fileName)
 
 
 
