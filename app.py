@@ -1,4 +1,4 @@
-# Хранитель ссылок 1.6, служит для децентрализованного хранения ссылок.
+# Хранитель ссылок 1.7 alpha, служит для децентрализованного хранения ссылок.
 # Основной модуль
 
 from PyQt5 import QtCore, QtWidgets
@@ -405,7 +405,7 @@ if __name__ == "__main__":                        # запуск приложе�
     # window.show()                                 # показать окно
     """приколхозим скролл"""
     scroll = QtWidgets.QScrollArea()
-    scroll.setWindowTitle("Link keeper 1.6" + (" " * 77) + "t.me/SergeyLysov")
+    scroll.setWindowTitle("Link keeper 1.7 alpha")
     scroll.setWidget(window)
     scroll.resize(570,200)
     scroll.setMinimumSize(570, 200)
