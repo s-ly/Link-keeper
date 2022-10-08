@@ -1,34 +1,38 @@
-# Хранитель ссылок 1.7 alpha, служит для децентрализованного хранения ссылок.
+# Хранитель ссылок 1.7, служит для децентрализованного хранения ссылок.
 # Основной модуль
 
-from PyQt5 import QtCore, QtWidgets
+# from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtWidgets
+from PyQt5 import QtCore
 from PyQt5 import QtGui # для кнопки открытия URL
-import ui_v2               # наш дизайн окна (из файла)
+# import ui_v2               # наш дизайн окна (из файла)
 import json
-import os   # открытие ссылок и файлов
-
+# import os   # открытие ссылок и файлов
+from card import MyUi # класс карточек
 
 class MyWindow(QtWidgets.QWidget):
     """Базовая форма"""
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
 
-        """Наполнение графическими элементами базовой формы."""
-        self.button = QtWidgets.QPushButton("Добавить новую карточку")
+        # Наполнение графическими элементами базовой формы.   
+        self.fileNameDefault = "Сохраните или откройте файл. Изменения вступают в силу после сохранения файла."   
+        self.linefileName = QtWidgets.QLineEdit(self.fileNameDefault)   # Текс имя файла данных
+        self.butAddNewCard = QtWidgets.QPushButton("Добавить новую карточку")
         self.button2 = QtWidgets.QPushButton("Функция 1 - вывод данных карточек.")
         self.button3 = QtWidgets.QPushButton("Функция 2 - чтение данных.")
         self.button4 = QtWidgets.QPushButton("Функция 3 - запись данных в файл.")
-        self.button5 = QtWidgets.QPushButton("Загрузить карточки")
-        self.button6 = QtWidgets.QPushButton("Сохранить карточки")
-        self.button7 = QtWidgets.QPushButton("Открыть все карточки")
-
-        # Текстовая строка с именей файла данных
-        self.butt_fileName = QtWidgets.QLineEdit("data.json")
-        # self.butt_fileName.setText('data.json')
-
-        # тестирование получения текста
-        # self.x = self.butt_fileName.text()
-        # print(self.x)
+        self.butSaveFileAs = QtWidgets.QPushButton("Сохранить файл как")
+        self.butSaveFile = QtWidgets.QPushButton("Сохранить файл")
+        self.butOpenAllCards = QtWidgets.QPushButton("Открыть все карточки")
+        self.butOpenFile = QtWidgets.QPushButton("Открыть файл")
+        self.butNewFile = QtWidgets.QPushButton("Новый файл")
+        
+        # Настройка элементов
+        # self.butt_fileName.setReadOnly(True) # только чтение
+        self.linefileName.setFrame(False) # показывать рамку
+        self.linefileName.setEnabled(False)
+        self.butSaveFile.setEnabled(False)
 
         # порождаем 3 лайоута
         self.buttonLayout = QtWidgets.QGridLayout() # дочерний для верхних кнопок
@@ -37,18 +41,33 @@ class MyWindow(QtWidgets.QWidget):
 
         # цифры позиционируют кнопки по колонкам и строкам
         # номер строки, номер колонки, высота элемента, ширина элемента
-        self.buttonLayout.addWidget(self.butt_fileName , 0, 0, 1, 2)
-        self.buttonLayout.addWidget(self.button, 1, 0, 1, 1)
-        self.buttonLayout.addWidget(self.button5, 1, 1, 1, 1)
-        self.buttonLayout.addWidget(self.button6, 2, 0, 1, 1)
-        self.buttonLayout.addWidget(self.button7, 2, 1, 1, 1)
+        self.buttonLayout.addWidget(self.linefileName , 0, 0, 1, 4)
+
+        self.buttonLayout.addWidget(self.butNewFile, 1, 0, 1, 1)
+        self.buttonLayout.addWidget(self.butOpenFile , 1, 1, 1, 1)
+        self.buttonLayout.addWidget(self.butSaveFile, 1, 2, 1, 1)
+        self.buttonLayout.addWidget(self.butSaveFileAs, 1, 3, 1, 1)
+
+        self.buttonLayout.addWidget(self.butAddNewCard, 2, 0, 1, 2)
+        self.buttonLayout.addWidget(self.butOpenAllCards, 2, 2, 1, 2)
+
+
+        # цифры позиционируют кнопки по колонкам и строкам
+        # номер строки, номер колонки, высота элемента, ширина элемента
+        # self.buttonLayout.addWidget(self.butt_fileName , 0, 0, 1, 3)
+        # self.buttonLayout.addWidget(self.butOpenFile , 1, 1, 1, 1)
+        # self.buttonLayout.addWidget(self.button, 1, 0, 1, 1)
+        # self.buttonLayout.addWidget(self.button5, 1, 2, 1, 1)
+        # self.buttonLayout.addWidget(self.button6, 2, 0, 1, 1)
+        # self.buttonLayout.addWidget(self.button7, 2, 1, 1, 1)
+        # self.buttonLayout.addWidget(self.butNewFile, 2, 2, 1, 1)
         
 
         self.setLayout(self.mainLayout) # задаём главный лайоут
         self.mainLayout.addLayout(self.buttonLayout) # помещаем дочерний в главный
         self.mainLayout.addLayout(self.cardsLayout) # помещаем дочерний в главный
 
-        self.button.clicked.connect(self.generate_group)        # обработка сигнала для генерации
+        self.butAddNewCard.clicked.connect(self.generate_group)        # обработка сигнала для генерации
         # self.my_signal_get_cursor_coordinate.connect(self.get_cursor_coordinate) # обработка сигнала из группы для поиска координат курсора
 
         # эти обработчики пока вроде не нужны
@@ -56,15 +75,64 @@ class MyWindow(QtWidgets.QWidget):
         self.button3.clicked.connect(self.readingData)          # обработка функции чтения данных с карточек
         self.button4.clicked.connect(self.writingDataToFile)    # обработка функции запись данных в файл
 
-        self.button5.clicked.connect(self.loadingFromFile)      # обработка функции загрузка из файла
-        self.button6.clicked.connect(self.saveCards)            # обработка функции сохранить карточки
-        self.button7.clicked.connect(self.openAllCards)         # обработка функции "открыть все карточки"
+        self.butSaveFileAs.clicked.connect(self.saveFileAs)           # обработка функции сохранить файл как
+        self.butSaveFile.clicked.connect(self.saveCards)            # обработка функции сохранить карточки
+        self.butOpenAllCards.clicked.connect(self.openAllCards)         # обработка функции "открыть все карточки"
+
+        self.butOpenFile.clicked.connect(self.openFileDialo)         # обработка функции "открыть все карточки"
+        self.butNewFile.clicked.connect(self.newFile)         # обработка функции "новый файл"
 
         self.list_obj = [] # список экземпляров карточек
         self.dict_data = {} # словарь только атрибутов карточек
 
         self.fileName = "" # Имя файла данных, с которым работает приложение
 
+    
+    # def newFile(self):
+    #     fname = QtWidgets.QFileDialog.getSaveFileName(self, 'Новый файл', QtCore.QDir.currentPath(), 'Image files (*.json)')[0]
+    #     if fname == '':
+    #         print('no')
+    #     else:
+    #         self.deleteAllCards()
+    #         self.linefileName.setText(fname)
+    #         self.saveCards()
+    #         self.loadingFromFile()
+    #         self.butSaveFile.setEnabled(True) # файл можно сохранять
+    
+    
+    def newFile(self):
+        self.deleteAllCards()
+        self.linefileName.setText(self.fileNameDefault)
+        self.butSaveFile.setEnabled(False) # файл нельзя сохранять
+        
+    
+    
+    def saveFileAs(self):
+        fname = QtWidgets.QFileDialog.getSaveFileName(self, 'Сохранить файл как', QtCore.QDir.currentPath(), 'Image files (*.json)')[0]
+        if fname == '':
+            print('no')
+        else:
+            print(fname)
+            self.linefileName.setText(fname)
+            self.saveCards()
+            self.butSaveFile.setEnabled(True) # файл можно сохранять
+
+    
+    def openFileDialo(self):
+        """ Диалог открытия файла.
+        QtCore.QDir.currentPath() - текущий каталок исполняемой программы. """
+
+        print('testing')
+        fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Открыть файл', QtCore.QDir.currentPath(), 'Image files (*.json)')[0]
+        if fname == '':
+            print('no')
+        else:
+            print(fname)
+            self.linefileName.setText(fname)
+            self.loadingFromFile()
+            self.butSaveFile.setEnabled(True) # файл можно сохранять
+
+    
     def openAllCards(self):
         """Открывает все карточки."""
         print("openAllCards")
@@ -113,21 +181,25 @@ class MyWindow(QtWidgets.QWidget):
         self.writingDataToFile()    # обработка функции запись данных в файл
 
     
-    def loadingFromFile(self):
-        """загрузка из файла"""
-        print("Загрузка из файла.")
-
-        """удаляем все карточки"""
+    def deleteAllCards(self):
+        """Удаляем все карточки"""
         for i in self.list_obj:
             i.groupBox.setParent(i)  # удаление (вроде) группы из главной формы
 
         self.resize(550, 150)  # размер главного окна по умолчанию
         self.list_obj = [] # обнуляем список экземпляров карточек
         self.dict_data = {} # обнуляем словарь только атрибутов карточек
+    
+    
+    def loadingFromFile(self):
+        """загрузка из файла"""
+        print("Загрузка из файла.")
+
+        self.deleteAllCards() # удаляем все карточки
 
         """Чтение json файла и его декодирование в словарь."""
         # получаем текущее имя файла данных из текстового поля
-        self.fileName = self.butt_fileName.text() 
+        self.fileName = self.linefileName.text() 
 
         with open(self.fileName) as obj_file:
             self.dict_data = json.loads(obj_file.read())
@@ -153,7 +225,7 @@ class MyWindow(QtWidgets.QWidget):
             self.dict_data[str(i.id)] = {'url': i.url, 'description': i.description, 'img': i.img}
 
         # получаем текущее имя файла данных из текстового поля
-        self.fileName = self.butt_fileName.text() 
+        self.fileName = self.linefileName.text() 
         
         """Кодирование словаря в данные json, и запись данных в файл."""
         with open(self.fileName, 'w') as obj_file:
@@ -249,153 +321,6 @@ class MyWindow(QtWidgets.QWidget):
         return id_test
 
 
-
-class MyUi(QtWidgets.QWidget, ui_v2.Ui_Form):
-    """Форма с кнопками из ui_v2.py"""
-    my_signal = QtCore.pyqtSignal()   # сигнал для удаления карточки
-    my_signal_get_cursor_coordinate = QtCore.pyqtSignal()   # сигнал для активации поиска курсора
-
-    def __init__(self, parent=None):
-        QtWidgets.QWidget.__init__(self, parent)   # вызываем конструктор базового класса
-        self.setupUi(self)                         # настройка нашего дизайна окна из файла
-
-        self.id = None          # id экземпляра карточки
-        self.url = None         # хрение url в карточке
-        self.description = None # описание карточки
-        self.img = None         # картинка в байтовом потоке
-
-        self.flag = False # флаг для удаления
-        # self.flagCreateImg = False # флаг, True если была определена область экрана для принскрина
-
-        # Обработка сигналов
-        self.pushButton.clicked.connect(self.openUrl)
-        self.pushButton_2.clicked.connect(self.del_group)
-        self.pushButton_3.clicked.connect(self.openImgLoadImg)
-        self.pushButton_4.clicked.connect(self.createSubWindow)
-
-    def del_group(self):
-        """Удаление группы"""
-        self.flag = True               # флаг на удаление из списка экземпляров карточек
-        self.groupBox.setParent(self)  # удаление (вроде) группы из главной формы
-        self.my_signal.emit()          # излучение сигнала из группы, что группа удалена
-
-    
-    def openUrl(self):
-        """ Открыть URL в браузере по умолчанию.
-        Парсим строку URL, если она начинается с 'http',
-        то открываем способом PyQt, иначе считаем строку адресом в Windows,
-        и открываем её командой 'cmd'. Это нужно, так-как иногда в URL появляются
-        спец.символы, например знак '?'. С таким символом cmd не справляется."""
-        print("сработала кнопка 1")        
-
-        url = str(self.url)  
-        url_parse = url[0:4]
-        if url_parse == 'http':
-            url = QtCore.QUrl(str(self.url)) # создаём (кажется) объект url из атрибута url
-            if not QtGui.QDesktopServices.openUrl(url): # открываем url программой по умолчанию
-                print("Херовый url")
-        else:
-            url_cmd = r"explorer.exe " + url   # соединяем с командой
-            os.system(url_cmd)                # открываем
-
-        # Пример команды:
-        # os.system(r"explorer.exe https://www.pinterest.com/pin/308778118191742222/")
-        # url = self.url                    # берём url
-        # url_cmd = r"explorer.exe " + url   # соединяем с командой
-        # os.system(url_cmd)                # открываем
-
-        # СТАРЫЙ СПОСОБ ПОКА ТУТ
-        # url = QtCore.QUrl(str(self.url)) # создаём (кажется) объект url из атрибута url
-        # if not QtGui.QDesktopServices.openUrl(url): # открываем url программой по умолчанию
-        #     print("Херовый url")
-
-
-    def openImgLoadImg(self):
-        """Открывает картинку и загружаем её в карточку"""
-        # self.my_signal_loadImg_fromFile.emit(self.id)          # излучение сигнала из группы, что надо загрузить картинку из файла
-
-        print("img ok")
-        self.fileImg = QtWidgets.QFileDialog.getOpenFileName() # создаёт диалог выбора файла
-        print(self.fileImg)
-        print(self.fileImg[0]) # отделяем часть информации
-
-        # грузим картинку в лейбл
-        self.pixmap = QtGui.QPixmap(self.fileImg[0]) # грузанули в pixmap
-        self.pixmap = self.pixmap.scaled(128, 128) # подгоняем размер картинки
-        self.label_img.setPixmap(self.pixmap) # помещаем pixmap в наш лейбел
-
-        # создать байтовый поток картинки
-        self.myBytes = QtCore.QByteArray()
-        self.myBuffer = QtCore.QBuffer(self.myBytes)
-        self.myBuffer.open(QtCore.QIODevice.WriteOnly)
-        self.pixmap.save(self.myBuffer, "PNG")
-
-        # сохраняем байтовый поток картинки в атрибут карточки img
-        self.img = str(self.myBytes, encoding='cp855') # простобайты в виде обычной строки
-
-    def createImg(self, scaleWindow2):
-        """Дублируем строки, ай-яй-яй!!! Создать изображение из принскрина по координатам:
-        принимает специальный объект scaleWindow2, в котором хранятся 4-е координаты габаритов подОкна."""
-
-        # вот как этот кусок кода работает, я доконца и не понял
-        self.screen = QtWidgets.QApplication.primaryScreen() # вот это самое непонятное
-        self.winid = QtWidgets.QApplication.desktop().winId() # идентификатор окон винды (откуда брать скриншот)
-
-        # берём скриншот и суём в pixmap
-        self.pixmap = self.screen.grabWindow(self.winid,
-                                             self.scaleWindow2.left(),
-                                             self.scaleWindow2.top(),
-                                             self.scaleWindow2.width(),
-                                             self.scaleWindow2.height())
-
-        self.pixmap = self.pixmap.scaled(128, 128) # подгоняем размер картинки
-        self.label_img.setPixmap(self.pixmap) # помещаем pixmap в наш лейбел
-
-        # создать байтовый поток картинки
-        self.myBytes = QtCore.QByteArray()
-        self.myBuffer = QtCore.QBuffer(self.myBytes)
-        self.myBuffer.open(QtCore.QIODevice.WriteOnly)
-        self.pixmap.save(self.myBuffer, "PNG")
-
-        # сохраняем байтовый поток картинки в атрибут карточки img
-        self.img = str(self.myBytes, encoding='cp855') # простобайты в виде обычной строки
-
-    def createSubWindow(self):
-        """создаём дочернее окно, по нему попытаемся получить координаты"""
-        self.window2 = QtWidgets.QWidget()
-        self.window2.setWindowTitle("Выберете область экрана")
-        self.window2.resize(256, 256)
-        self.window2.setWindowOpacity(0.75) # прозрачность подОкна
-
-        self.but = QtWidgets.QPushButton("Выбрать", self.window2) # кнопка подОкна
-        self.but.clicked.connect(self.closeSubWindow) # обработка сигнал нажатия на кнопу подОкна
-
-        self.window2.show() # показать подОкно
-
-    def closeSubWindow(self):
-        """Отработка закрытия дочернего окна"""
-        # получаем координаты подОкна без учёта заголовка: left(), top(), width(), height(),
-        # кладём их в специальный объект self.scaleWindow2.
-        self.scaleWindow2 = self.window2.geometry()
-
-        print("system: захват координат:")
-        print(self.id)
-        print(self.scaleWindow2.left(), self.scaleWindow2.top())
-        print(self.scaleWindow2.width(), self.scaleWindow2.height())
-
-        self.flagCreateImg = True # меняем флаг, совершён захват области для принскрина
-        self.window2.close() # закрыть подОкно
-        self.createImg(self.scaleWindow2) # захват был совершён, создаём принскрин по захваченным координатам
-
-    
-    # def loadFileName(self):
-    #     """ Загружает текст из текстового поля для имени файла данных. """
-    #     self.fileName = self.butt_fileName.text()
-    #     # self.fileName = self.butt
-    #     print(self.fileName)
-
-
-
 if __name__ == "__main__":                        # запуск приложения, если это исполняемый модуль
     import sys
     app = QtWidgets.QApplication(sys.argv)        # Создание приложения
@@ -405,7 +330,7 @@ if __name__ == "__main__":                        # запуск приложе�
     # window.show()                                 # показать окно
     """приколхозим скролл"""
     scroll = QtWidgets.QScrollArea()
-    scroll.setWindowTitle("Link keeper 1.7 alpha")
+    scroll.setWindowTitle("Link keeper 1.7")
     scroll.setWidget(window)
     scroll.resize(570,200)
     scroll.setMinimumSize(570, 200)
