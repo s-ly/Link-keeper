@@ -14,10 +14,10 @@ pip install pyqt5
 pip install PyQt5Designer
 
 Создание дистрибутива:
-pyinstaller -F -w -i "D:\Work\0994 - 2020.06.11 - link keeper - PY\link keeper\1.5\icon.ico" app27.py
-pyinstaller -F -w -i "C:\Users\s.lysov\Link-keeper\icon.ico" app.py
 pyinstaller -F -w -i "C:\Work\2022.10.01 - Link keeper - CODE\icon.ico" app.py
 
+Преобразование UI в PY
+pyuic5 ui_test.ui -o ui_test.py
 ---------------------------------------------------------------------------------------------------
 
-Сделать открытие файла.
+explorer.exe C:\Work\test.txt

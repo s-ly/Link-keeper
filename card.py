@@ -24,10 +24,10 @@ class MyUi(QtWidgets.QWidget, ui_v2.Ui_Form):
         # self.flagCreateImg = False # флаг, True если была определена область экрана для принскрина
 
         # Обработка сигналов
-        self.pushButton.clicked.connect(self.openUrl)
-        self.pushButton_2.clicked.connect(self.del_group)
-        self.pushButton_3.clicked.connect(self.openImgLoadImg)
-        self.pushButton_4.clicked.connect(self.createSubWindow)
+        self.butOpenCard.clicked.connect(self.openUrl)
+        self.butDeleteCard.clicked.connect(self.del_group)
+        self.butLoadImage.clicked.connect(self.openImgLoadImg)
+        self.butScreenshot.clicked.connect(self.createSubWindow)
 
     def del_group(self):
         """Удаление группы"""
@@ -108,11 +108,11 @@ class MyUi(QtWidgets.QWidget, ui_v2.Ui_Form):
     def createSubWindow(self):
         """создаём дочернее окно, по нему попытаемся получить координаты"""
         self.window2 = QtWidgets.QWidget()
-        self.window2.setWindowTitle("Выберете область экрана")
+        self.window2.setWindowTitle("Снимок экрана")
         self.window2.resize(256, 256)
         self.window2.setWindowOpacity(0.75) # прозрачность подОкна
 
-        self.but = QtWidgets.QPushButton("Выбрать", self.window2) # кнопка подОкна
+        self.but = QtWidgets.QPushButton("Выберете область экрана и нажмите", self.window2) # кнопка подОкна
         self.but.clicked.connect(self.closeSubWindow) # обработка сигнал нажатия на кнопу подОкна
 
         self.window2.show() # показать подОкно

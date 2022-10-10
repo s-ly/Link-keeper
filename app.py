@@ -1,4 +1,4 @@
-# Хранитель ссылок 1.7, служит для децентрализованного хранения ссылок.
+# Хранитель ссылок 1.7.1, служит для децентрализованного хранения ссылок.
 # Основной модуль
 
 # from PyQt5 import QtCore, QtWidgets
@@ -18,21 +18,49 @@ class MyWindow(QtWidgets.QWidget):
         # Наполнение графическими элементами базовой формы.   
         self.fileNameDefault = "Сохраните или откройте файл. Изменения вступают в силу после сохранения файла."   
         self.linefileName = QtWidgets.QLineEdit(self.fileNameDefault)   # Текс имя файла данных
-        self.butAddNewCard = QtWidgets.QPushButton("Добавить новую карточку")
+        self.butAddNewCard = QtWidgets.QPushButton("Добавить карточку")
         self.button2 = QtWidgets.QPushButton("Функция 1 - вывод данных карточек.")
         self.button3 = QtWidgets.QPushButton("Функция 2 - чтение данных.")
         self.button4 = QtWidgets.QPushButton("Функция 3 - запись данных в файл.")
-        self.butSaveFileAs = QtWidgets.QPushButton("Сохранить файл как")
-        self.butSaveFile = QtWidgets.QPushButton("Сохранить файл")
-        self.butOpenAllCards = QtWidgets.QPushButton("Открыть все карточки")
-        self.butOpenFile = QtWidgets.QPushButton("Открыть файл")
-        self.butNewFile = QtWidgets.QPushButton("Новый файл")
+        self.butSaveFileAs = QtWidgets.QPushButton("Сохранить как")
+        self.butSaveFile = QtWidgets.QPushButton("Сохранить")
+        self.butOpenAllCards = QtWidgets.QPushButton("Открыть всё")
+        self.butOpenFile = QtWidgets.QPushButton("Открыть")
+        self.butNewFile = QtWidgets.QPushButton("Новый")
         
         # Настройка элементов
         # self.butt_fileName.setReadOnly(True) # только чтение
         self.linefileName.setFrame(False) # показывать рамку
         self.linefileName.setEnabled(False)
         self.butSaveFile.setEnabled(False)
+        
+        # Иконки
+        icon_new = QtGui.QIcon()
+        icon_open = QtGui.QIcon()
+        icon_save = QtGui.QIcon()
+        icon_saveAs = QtGui.QIcon()
+        icon_butAddNewCard = QtGui.QIcon()
+        icon_butOpenAllCards = QtGui.QIcon()
+        icon_new.addPixmap(QtGui.QPixmap("ico/new.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon_open.addPixmap(QtGui.QPixmap("ico/open.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon_save.addPixmap(QtGui.QPixmap("ico/save.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon_saveAs.addPixmap(QtGui.QPixmap("ico/saveAs.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon_butAddNewCard.addPixmap(QtGui.QPixmap("ico/plus.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon_butOpenAllCards.addPixmap(QtGui.QPixmap("ico/bookmark.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.butNewFile.setIcon(icon_new)
+        self.butOpenFile.setIcon(icon_open)
+        self.butSaveFile.setIcon(icon_save)
+        self.butSaveFileAs.setIcon(icon_saveAs)
+        self.butAddNewCard.setIcon(icon_butAddNewCard)
+        self.butOpenAllCards.setIcon(icon_butOpenAllCards)
+
+        # подсказки
+        self.butNewFile.setToolTip("Создать новый блокнот")
+        self.butOpenFile.setToolTip("Открыть блокнот")
+        self.butSaveFile.setToolTip("Сохранить блокнот")
+        self.butSaveFileAs.setToolTip("Сохранить блокнот как...")
+        self.butAddNewCard.setToolTip("Добавить новую карточку")
+        self.butOpenAllCards.setToolTip("Открыть все карточки")
 
         # порождаем 3 лайоута
         self.buttonLayout = QtWidgets.QGridLayout() # дочерний для верхних кнопок
@@ -330,7 +358,7 @@ if __name__ == "__main__":                        # запуск приложе�
     # window.show()                                 # показать окно
     """приколхозим скролл"""
     scroll = QtWidgets.QScrollArea()
-    scroll.setWindowTitle("Link keeper 1.7")
+    scroll.setWindowTitle("Link keeper 1.7.1")
     scroll.setWidget(window)
     scroll.resize(570,200)
     scroll.setMinimumSize(570, 200)
