@@ -1,4 +1,4 @@
-# Хранитель ссылок 1.7.1, служит для децентрализованного хранения ссылок.
+# Хранитель ссылок 1.7.2, служит для децентрализованного хранения ссылок.
 # Основной модуль
 
 # from PyQt5 import QtCore, QtWidgets
@@ -27,6 +27,8 @@ class MyWindow(QtWidgets.QWidget):
         self.butOpenAllCards = QtWidgets.QPushButton("Открыть всё")
         self.butOpenFile = QtWidgets.QPushButton("Открыть")
         self.butNewFile = QtWidgets.QPushButton("Новый")
+        self.butOnTopWin_on = QtWidgets.QPushButton("По верх окон")
+        self.butOnTopWin_off = QtWidgets.QPushButton("Обычный режим")
         
         # Настройка элементов
         # self.butt_fileName.setReadOnly(True) # только чтение
@@ -41,18 +43,24 @@ class MyWindow(QtWidgets.QWidget):
         icon_saveAs = QtGui.QIcon()
         icon_butAddNewCard = QtGui.QIcon()
         icon_butOpenAllCards = QtGui.QIcon()
+        icon_butOnTopWin_on = QtGui.QIcon()
+        icon_butOnTopWin_off = QtGui.QIcon()
         icon_new.addPixmap(QtGui.QPixmap("ico/new.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         icon_open.addPixmap(QtGui.QPixmap("ico/open.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         icon_save.addPixmap(QtGui.QPixmap("ico/save.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         icon_saveAs.addPixmap(QtGui.QPixmap("ico/saveAs.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         icon_butAddNewCard.addPixmap(QtGui.QPixmap("ico/plus.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         icon_butOpenAllCards.addPixmap(QtGui.QPixmap("ico/bookmark.ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon_butOnTopWin_on.addPixmap(QtGui.QPixmap("ico/lock.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon_butOnTopWin_off.addPixmap(QtGui.QPixmap("ico/unlock.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.butNewFile.setIcon(icon_new)
         self.butOpenFile.setIcon(icon_open)
         self.butSaveFile.setIcon(icon_save)
         self.butSaveFileAs.setIcon(icon_saveAs)
         self.butAddNewCard.setIcon(icon_butAddNewCard)
         self.butOpenAllCards.setIcon(icon_butOpenAllCards)
+        self.butOnTopWin_on.setIcon(icon_butOnTopWin_on)
+        self.butOnTopWin_off.setIcon(icon_butOnTopWin_off)
 
         # подсказки
         self.butNewFile.setToolTip("Создать новый блокнот")
@@ -61,6 +69,8 @@ class MyWindow(QtWidgets.QWidget):
         self.butSaveFileAs.setToolTip("Сохранить блокнот как...")
         self.butAddNewCard.setToolTip("Добавить новую карточку")
         self.butOpenAllCards.setToolTip("Открыть все карточки")
+        self.butOnTopWin_on.setToolTip("Закрепить окно по верх остальных окон")
+        self.butOnTopWin_off.setToolTip("Открепить окно, обычный режим")
 
         # порождаем 3 лайоута
         self.buttonLayout = QtWidgets.QGridLayout() # дочерний для верхних кнопок
@@ -76,8 +86,11 @@ class MyWindow(QtWidgets.QWidget):
         self.buttonLayout.addWidget(self.butSaveFile, 1, 2, 1, 1)
         self.buttonLayout.addWidget(self.butSaveFileAs, 1, 3, 1, 1)
 
-        self.buttonLayout.addWidget(self.butAddNewCard, 2, 0, 1, 2)
-        self.buttonLayout.addWidget(self.butOpenAllCards, 2, 2, 1, 2)
+        self.buttonLayout.addWidget(self.butAddNewCard, 2, 0, 1, 1)
+        self.buttonLayout.addWidget(self.butOpenAllCards, 2, 1, 1, 1)
+        
+        self.buttonLayout.addWidget(self.butOnTopWin_on, 2, 2, 1, 1)
+        self.buttonLayout.addWidget(self.butOnTopWin_off, 2, 3, 1, 1)
 
 
         # цифры позиционируют кнопки по колонкам и строкам
@@ -109,6 +122,8 @@ class MyWindow(QtWidgets.QWidget):
 
         self.butOpenFile.clicked.connect(self.openFileDialo)         # обработка функции "открыть все карточки"
         self.butNewFile.clicked.connect(self.newFile)         # обработка функции "новый файл"
+        self.butOnTopWin_on.clicked.connect(self.onTopWin_on)         # обработка функции "test"
+        self.butOnTopWin_off.clicked.connect(self.onTopWin_off)         # обработка функции "test"
 
         self.list_obj = [] # список экземпляров карточек
         self.dict_data = {} # словарь только атрибутов карточек
@@ -128,11 +143,22 @@ class MyWindow(QtWidgets.QWidget):
     #         self.butSaveFile.setEnabled(True) # файл можно сохранять
     
     
+    def onTopWin_on(self):
+        """Переводит окно в режим по верх окон"""
+        scroll.setWindowFlags(scroll.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
+        scroll.show()
+
+
+    def onTopWin_off(self):
+        """Переводит окно в обычный режим"""
+        scroll.setWindowFlags(scroll.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint)
+        scroll.show()
+    
+    
     def newFile(self):
         self.deleteAllCards()
         self.linefileName.setText(self.fileNameDefault)
-        self.butSaveFile.setEnabled(False) # файл нельзя сохранять
-        
+        self.butSaveFile.setEnabled(False) # файл нельзя сохранять        
     
     
     def saveFileAs(self):
@@ -358,11 +384,10 @@ if __name__ == "__main__":                        # запуск приложе�
     # window.show()                                 # показать окно
     """приколхозим скролл"""
     scroll = QtWidgets.QScrollArea()
-    scroll.setWindowTitle("Link keeper 1.7.1")
+    scroll.setWindowTitle("Link keeper 1.7.2")
     scroll.setWidget(window)
     scroll.resize(570,200)
     scroll.setMinimumSize(570, 200)
     scroll.setMaximumWidth(570)
     scroll.show()
-
     sys.exit(app.exec_())                         # бесконечно слушаем события
