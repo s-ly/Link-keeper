@@ -35,6 +35,7 @@ class MyWindow(QtWidgets.QWidget):
         self.linefileName.setFrame(False) # показывать рамку
         self.linefileName.setEnabled(False)
         self.butSaveFile.setEnabled(False)
+        self.butOnTopWin_off.setEnabled(False)
         
         # Иконки
         icon_new = QtGui.QIcon()
@@ -144,13 +145,21 @@ class MyWindow(QtWidgets.QWidget):
     
     
     def onTopWin_on(self):
-        """Переводит окно в режим по верх окон"""
+        """Переводит окно в режим по верх окон. 
+        Регулирует активность кнопок."""
+        self.butOnTopWin_off.setEnabled(True)
+        self.butOnTopWin_on.setEnabled(False)
+
         scroll.setWindowFlags(scroll.windowFlags() | QtCore.Qt.WindowStaysOnTopHint)
         scroll.show()
 
 
     def onTopWin_off(self):
-        """Переводит окно в обычный режим"""
+        """Переводит окно в обычный режим.
+        Регулирует активность кнопок."""
+        self.butOnTopWin_off.setEnabled(False)
+        self.butOnTopWin_on.setEnabled(True)
+
         scroll.setWindowFlags(scroll.windowFlags() & ~QtCore.Qt.WindowStaysOnTopHint)
         scroll.show()
     
@@ -162,7 +171,8 @@ class MyWindow(QtWidgets.QWidget):
     
     
     def saveFileAs(self):
-        fname = QtWidgets.QFileDialog.getSaveFileName(self, 'Сохранить файл как', QtCore.QDir.currentPath(), 'Image files (*.json)')[0]
+        fname = QtWidgets.QFileDialog.getSaveFileName(
+            self, 'Сохранить файл как', QtCore.QDir.currentPath(), 'Image files (*.json *.lk)')[0]
         if fname == '':
             print('no')
         else:
@@ -177,7 +187,9 @@ class MyWindow(QtWidgets.QWidget):
         QtCore.QDir.currentPath() - текущий каталок исполняемой программы. """
 
         print('testing')
-        fname = QtWidgets.QFileDialog.getOpenFileName(self, 'Открыть файл', QtCore.QDir.currentPath(), 'Image files (*.json)')[0]
+        fname = QtWidgets.QFileDialog.getOpenFileName(
+            self, 'Открыть файл', QtCore.QDir.currentPath(), 
+            'Image files (*.json *.lk)')[0]
         if fname == '':
             print('no')
         else:
@@ -384,7 +396,7 @@ if __name__ == "__main__":                        # запуск приложе�
     # window.show()                                 # показать окно
     """приколхозим скролл"""
     scroll = QtWidgets.QScrollArea()
-    scroll.setWindowTitle("Link keeper 1.7.2")
+    scroll.setWindowTitle("Link keeper 1.7.3")
     scroll.setWidget(window)
     scroll.resize(570,200)
     scroll.setMinimumSize(570, 200)
